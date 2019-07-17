@@ -10,3 +10,5 @@ dist/
 # ignore test links
 test/node_modules
 test/src
+
+.idea
