@@ -95,6 +95,16 @@ var changeColor = function(val) {
     preview_zone.children[0].style.height = '100%'
     display_zone.innerText = dronePaintObj.svgFile
 }
+
+var changeWidth = function(val) {
+    dronePaintObj.setStrokeWidth(val)
+    preview_zone.innerHTML = dronePaintObj.svgFile
+    preview_zone.children[0].style.width = '100%'
+    preview_zone.children[0].style.height = '100%'
+    display_zone.innerText = dronePaintObj.svgFile
+}
+
+
 var renderUI = function(list) {
     uiControlsEl.innerHTML = ''
     //console.log(list)
@@ -134,6 +144,12 @@ var renderUI = function(list) {
             e.srcElement.setAttribute('value', this.value)
         }
     })
+
+    // call color change
+    document.querySelector('input[name="strokewidth"]').onchange = function(e) {
+        changeWidth(e.target.value)
+    }
+
 
     // call color change
     document.querySelectorAll('input[type=radio]').forEach((el)=>{

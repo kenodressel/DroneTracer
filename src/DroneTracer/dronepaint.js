@@ -13,6 +13,7 @@ class DronePaint {
         this.traces = traces
 
         this.paintingColor = this.paintingConfig.colors[0]
+        this.strokeWidth = 200
         this.paintingScale = 1
         this.paintingPosition = [0,0]
 
@@ -65,6 +66,11 @@ class DronePaint {
         this.setSVGGlobal()
     }
 
+    setStrokeWidth(strokeWidth) {
+        this.strokeWidth = strokeWidth
+        this.setSVGGlobal()
+    }
+
     setSVGHeader() {
         this.SVGHeader = svgUtils.getSVGHeader(
             this.paintingWidth, this.paintingHeight,
@@ -75,7 +81,7 @@ class DronePaint {
     }
 
     setSVGGlobal() {
-        this.SVGGlobalStyle = svgUtils.getGlobal(this.paintingColor,this.paintingConfig.strokeWeight)
+        this.SVGGlobalStyle = svgUtils.getGlobal(this.paintingColor,this.strokeWidth)
     }
 
     checkPaintingPosition(possition, scale=1) {
