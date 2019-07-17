@@ -1,19 +1,19 @@
 import * as StackBlur from '../libs/stackblur-es.js'
 
-const generateKernel = function(sigmma, size) {
+const generateKernel = function (sigmma, size) {
     const E = 2.718 // Euler's number rounded of to 3 places
     var kernel = []
     var sum = 0
 
     for (let i = 0; i < size; i++) {
         kernel[i] = []
-        let y = -(size - 1)/2 + i // calculate the local y coordinate of neighbor
+        let y = -(size - 1) / 2 + i // calculate the local y coordinate of neighbor
 
         for (let j = 0; j < size; j++) {
-            let x = -(size - 1)/2 + j // calculate the local x coordinate of neighbor
+            let x = -(size - 1) / 2 + j // calculate the local x coordinate of neighbor
 
             //create kernel round to 3 decimal places
-            let gaussian = 1/(2 * Math.PI * Math.pow(sigmma, 2)) * Math.pow(E, -(Math.pow(Math.abs(x),2) + Math.pow(Math.abs(y), 2))/(2 * Math.pow(sigmma, 2)) )
+            let gaussian = 1 / (2 * Math.PI * Math.pow(sigmma, 2)) * Math.pow(E, -(Math.pow(Math.abs(x), 2) + Math.pow(Math.abs(y), 2)) / (2 * Math.pow(sigmma, 2)))
             kernel[i][j] = gaussian
             sum += gaussian
         }
@@ -22,19 +22,19 @@ const generateKernel = function(sigmma, size) {
     //normalize the kernel
     for (let k = 0; k < kernel.length; k++)
         for (let l = 0; l < kernel[k].length; l++)
-            kernel[k][l] = (kernel[k][l]/sum).toFixed(3)
+            kernel[k][l] = (kernel[k][l] / sum).toFixed(3)
 
     return kernel
 
 }
 
-const getNeighbors = function(imgSource, x, y, size, repeat = false) {
+const getNeighbors = function (imgSource, x, y, size, repeat = false) {
     var neighbors = []
     for (let i = 0; i < size; i++) {
         neighbors[i] = []
         for (let j = 0; j < size; j++) {
-            var trnsX = x-(size-1)/2+i
-            var trnsY = y-(size-1)/2+j
+            var trnsX = x - (size - 1) / 2 + i
+            var trnsY = y - (size - 1) / 2 + j
             if (imgSource[trnsY] !== undefined && imgSource[trnsY][trnsX] !== undefined)
             //if (imgSource[trnsY] && imgSource[trnsY][trnsX])
                 neighbors[i][j] = imgSource[trnsY][trnsX]
@@ -48,7 +48,7 @@ const getNeighbors = function(imgSource, x, y, size, repeat = false) {
     return neighbors
 }
 
-const roundDir = function(deg) {
+const roundDir = function (deg) {
     deg = deg < 0 ? deg + 180 : deg
 
     if ((deg >= 0 && deg <= 22.5) || (deg > 157.5 && deg <= 180)) {
@@ -63,19 +63,19 @@ const roundDir = function(deg) {
 }
 
 // TODO: convert into ES6 generator?
-const convolve = function(imgSource, neighborSize, callback, repeat = false) {
+const convolve = function (imgSource, neighborSize, callback, repeat = false) {
     var imgCopy = imgSource.slice(0)
     for (let y = 0; y < imgSource.length; y++) {
         for (let x = 0; x < imgSource[0].length; x++) {
             var current = imgSource[y][x]
-            var neighbors = getNeighbors(imgCopy, x, y, neighborSize, repeat) 
-            callback(x,y, current, neighbors)
-            
+            var neighbors = getNeighbors(imgCopy, x, y, neighborSize, repeat)
+            callback(x, y, current, neighbors)
+
         }
     }
 }
 
-export const invert = function(imgSource) {
+export const invert = function (imgSource) {
     var invertedImg = []
 
     for (let y = 0; y < imgSource.length; y++) {
@@ -89,9 +89,9 @@ export const invert = function(imgSource) {
 }
 
 // imgSource should be an array with the grayscale values of the image pixels
-export const gaussianBlur = function(imgSource, sigmma = 2.4, size = 5) {
+export const gaussianBlur = function (imgSource, sigmma = 2.4, size = 5) {
     // size oddNumber
-    size =  size%2 == 0 ? size+1 : size
+    size = size % 2 === 0 ? size + 1 : size
     var kernel = generateKernel(sigmma, size)
     var blurImage = imgSource.slice(0)
 
@@ -105,18 +105,18 @@ export const gaussianBlur = function(imgSource, sigmma = 2.4, size = 5) {
     return blurImage
 }
 
-// fast almost Gaussian by Mario Klingemann 
-export const fastBlur = function(imgSource, radius) {
+// fast almost Gaussian by Mario Klingemann
+export const fastBlur = function (imgSource, radius) {
     return StackBlur.imageDataRGB(imgSource, 0, 0, imgSource.width, imgSource.height, radius)
 }
 
 // imageData should be a canvas imageData object
-export const grayscale = function(imageData) {
+export const grayscale = function (imageData) {
     var grayscale = []
 
-    for(let y = 0; y < imageData.height; y++) {
+    for (let y = 0; y < imageData.height; y++) {
         grayscale[y] = []
-        for(let x = 0; x < imageData.width ; x++) {
+        for (let x = 0; x < imageData.width; x++) {
             var index = (y * imageData.width + x) * 4
 
             let r = imageData.data[index]
@@ -124,7 +124,7 @@ export const grayscale = function(imageData) {
             let b = imageData.data[index + 2]
             let a = imageData.data[index + 3]
 
-            grayscale[y][x] = a===255 ? (0.3 * r)+(0.59 * g)+(0.11 * b) : 255
+            grayscale[y][x] = a === 255 ? (0.3 * r) + (0.59 * g) + (0.11 * b) : 255
         }
     }
 
@@ -132,7 +132,7 @@ export const grayscale = function(imageData) {
 }
 
 // Gradient (Magnitude) with Sobel
-export const gradient = function(imgSource) {
+export const gradient = function (imgSource) {
     var filterOperator = {
         y: [
             [-1, 0, 1],
@@ -150,44 +150,44 @@ export const gradient = function(imgSource) {
     var sobelImage = []
     var dirMap = []
     for (let y of imgSource) {
-        sobelImage.push( new Array(y.length) )
-        dirMap.push( new Array(y.length) )
+        sobelImage.push(new Array(y.length))
+        dirMap.push(new Array(y.length))
     }
 
     convolve(imgSource, 3, (x, y, current, neighbors) => {
         var sumX = 0, sumY = 0
 
-        if (x !== 0 && y !== 0 && x !== imgSource[0].length-1 && y !== imgSource.length-1) {
+        if (x !== 0 && y !== 0 && x !== imgSource[0].length - 1 && y !== imgSource.length - 1) {
             for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 3; j++) {
                     //if (!neighbors[i][j]) continue
-                    sumX += neighbors[i][j] * filterOperator['x'][i][j] 
-                    sumY += neighbors[i][j] * filterOperator['y'][i][j] 
+                    sumX += neighbors[i][j] * filterOperator['x'][i][j]
+                    sumY += neighbors[i][j] * filterOperator['y'][i][j]
                 }
             }
         }
 
         // direction
-        dirMap[y][x] = roundDir(Math.atan2(sumY, sumX) * (180/Math.PI))
+        dirMap[y][x] = roundDir(Math.atan2(sumY, sumX) * (180 / Math.PI))
 
         // magnitude
-        sobelImage[y][x] = Math.round( Math.sqrt(sumX*sumX + sumY*sumY) )
+        sobelImage[y][x] = Math.round(Math.sqrt(sumX * sumX + sumY * sumY))
     })
 
     return {sobelImage, dirMap}
 }
 
 // based on cmisenas non-maximum-suppression for canny-edge-detection
-export const nonMaximumSuppression = function(imgSource, dirMap) {
+export const nonMaximumSuppression = function (imgSource, dirMap) {
     // clone Array
     var nmsuImg = []
     for (let y of imgSource)
-        nmsuImg.push( y.slice(0) )
+        nmsuImg.push(y.slice(0))
 
     var degrees = {
         0: [{x: 0, y: 1}, {x: 2, y: 1}],
-        45:[{x: 0, y: 0}, {x: 2, y: 2}],
-        90:  [{x: 1, y: 2}, {x: 1, y: 0}],
+        45: [{x: 0, y: 0}, {x: 2, y: 2}],
+        90: [{x: 1, y: 2}, {x: 1, y: 0}],
         135: [{x: 0, y: 2}, {x: 2, y: 0}],
     }
 
@@ -198,7 +198,7 @@ export const nonMaximumSuppression = function(imgSource, dirMap) {
         var neighbor2 = neighbors[pixNeighbors[1].x][pixNeighbors[1].y]
 
         if (neighbor1 > imgSource[y][x] || neighbor2 > imgSource[y][x] ||
-          (neighbor2 === imgSource[y][x] && neighbor1 < imgSource[y][x])
+            (neighbor2 === imgSource[y][x] && neighbor1 < imgSource[y][x])
         )
             nmsuImg[y][x] = 0
     })
@@ -207,50 +207,52 @@ export const nonMaximumSuppression = function(imgSource, dirMap) {
 }
 
 // Threshold in %
-export const hysteresis = function(imgSource, highThreshold = 55, lowThreshold = 5) {
-    var ht =  255 * (highThreshold/100)
-    var lt = 255 * (lowThreshold/100)
+export const hysteresis = function (imgSource, highThreshold = 55, lowThreshold = 5) {
+    var ht = 255 * (highThreshold / 100)
+    var lt = 255 * (lowThreshold / 100)
 
     // create an empty image array
     var hysteresisImg = []
     for (let y of imgSource)
-        hysteresisImg.push( new Array(y.length) )
+        hysteresisImg.push(new Array(y.length))
 
     // first pass | find high threshold edges
     convolve(imgSource, 3, (x, y, current) => {
         if (current > ht)
             hysteresisImg[y][x] = 255
-        else if (current < lt || (current<=ht && current>=lt))
+        else if (current < lt || (current <= ht && current >= lt))
             hysteresisImg[y][x] = 0
-    
+
     })
 
     // second pass | traver over potential edges and join with high threshold ones
-    var traverseEdge = function(x,y) {
-        if (x === 0 || y === 0 || x === imgSource[0].length-1 || y === imgSource.length-1)
+    var traverseEdge = function (x, y) {
+        if (x === 0 || y === 0 || x === imgSource[0].length - 1 || y === imgSource.length - 1)
             return
         if (hysteresisImg[y][x] > ht) {
             var neighbors = getNeighbors(imgSource, x, y, 3)
             for (let i = 0; i < neighbors.length; i++) {
                 for (let j = 0; j < neighbors[0].length; j++) {
-                    if (neighbors[i][j]<=ht && neighbors[i][j]>=lt &&
-                        hysteresisImg[y-1+j][x-1+i] <= ht) {
-                        hysteresisImg[y-1+j][x-1+i] = 255
-                        traverseEdge(x-1+i, y-1+j)
+                    if (neighbors[i][j] <= ht && neighbors[i][j] >= lt &&
+                        hysteresisImg[y - 1 + j][x - 1 + i] <= ht) {
+                        hysteresisImg[y - 1 + j][x - 1 + i] = 255
+                        traverseEdge(x - 1 + i, y - 1 + j)
                     }
                 }
             }
         }
     }
-    convolve(imgSource, 1, (x, y) => { traverseEdge(x, y) })
+    convolve(imgSource, 1, (x, y) => {
+        traverseEdge(x, y)
+    })
 
     return hysteresisImg
 }
 
 // threshold value in %
-export const thresholdFilter = function(imgSource, thresholdValue) {
+export const thresholdFilter = function (imgSource, thresholdValue) {
     var thresholdImg = []
-    var threshold = 255 * (thresholdValue/100)
+    var threshold = 255 * (thresholdValue / 100)
     for (let y = 0; y < imgSource.length; y++) {
         thresholdImg[y] = []
         for (let x = 0; x < imgSource[0].length; x++)
@@ -260,7 +262,7 @@ export const thresholdFilter = function(imgSource, thresholdValue) {
     return thresholdImg
 }
 
-export const screen = function(imgSource, imgMask) {
+export const screen = function (imgSource, imgMask) {
     var screenImg = []
 
     for (let y = 0; y < imgSource.length; y++) {
@@ -268,7 +270,7 @@ export const screen = function(imgSource, imgMask) {
         for (let x = 0; x < imgSource[0].length; x++) {
             if (imgSource[y][x] === imgMask[y][x] && imgSource[y][x] === 0)
                 screenImg[y][x] = 0
-            else 
+            else
                 screenImg[y][x] = 255
         }
     }
@@ -277,23 +279,23 @@ export const screen = function(imgSource, imgMask) {
 }
 
 // simplification of on https://en.wikipedia.org/wiki/Mathematical_morphology#Dilation
-const setDilationValue = function(neighbors) {
+const setDilationValue = function (neighbors) {
     for (let x of neighbors) {
         for (let y of x) {
-            if ( y < 255 ) return 0
+            if (y < 255) return 0
         }
     }
     return 255
 }
-export const dilation = function(imgSource, radius = 5) {
+export const dilation = function (imgSource, radius = 5) {
     // create an empty image array
     var dilationImg = []
     for (let y of imgSource)
-        dilationImg.push( new Array(y.length) )
+        dilationImg.push(new Array(y.length))
 
-    for(let y = 0; y < imgSource.length; y++) {
-        for(let x = 0; x < imgSource[0].length; x++) {
-            var neighbors = getNeighbors(imgSource, x, y, radius*2+1, true)
+    for (let y = 0; y < imgSource.length; y++) {
+        for (let x = 0; x < imgSource[0].length; x++) {
+            var neighbors = getNeighbors(imgSource, x, y, radius * 2 + 1, true)
             dilationImg[y][x] = imgSource[y][x] === 0 ? 0 : setDilationValue(neighbors)
         }
     }
@@ -304,13 +306,13 @@ export const dilation = function(imgSource, radius = 5) {
 // implementation base on https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm#JavaScript
 var nbrs = [[0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1]]
 var nbrGroups = [[[0, 2, 4], [2, 4, 6]], [[0, 2, 6], [0, 4, 6]]]
-var toWhite = new Array()
+var toWhite = []
 
-export const zsthinning = function(imgSource) {
+export const zsthinning = function (imgSource) {
     // clone Array
     var thinningImg = []
     for (let y of imgSource)
-        thinningImg.push( y.slice(0) )
+        thinningImg.push(y.slice(0))
 
     var firstStep = false
     var hasChanged
@@ -328,7 +330,7 @@ export const zsthinning = function(imgSource) {
                     continue
                 if (!atLeastOneIsWhite(thinningImg, r, c, firstStep ? 0 : 1))
                     continue
-                toWhite.push({x:c, y:r})
+                toWhite.push({x: c, y: r})
                 hasChanged = true
             }
         }
@@ -336,7 +338,7 @@ export const zsthinning = function(imgSource) {
             var p = toWhite[i]
             thinningImg[p.y][p.x] = 255
         }
-        toWhite = new Array()
+        toWhite = []
     } while ((firstStep || hasChanged))
 
     return thinningImg

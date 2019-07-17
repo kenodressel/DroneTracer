@@ -18,9 +18,9 @@ export default class ImageManager {
 
         // Initialize colorLayer with -1
         // add border (1/side = +2)
-        for(let y = 0; y < this.source.height+2; y++) {
-            this.colorLayer[y]=[]
-            for(let x = 0; x < this.source.width+2 ; x++) {
+        for (let y = 0; y < this.source.height + 2; y++) {
+            this.colorLayer[y] = []
+            for (let x = 0; x < this.source.width + 2; x++) {
                 this.colorLayer[y][x] = -1
             }
         }
@@ -33,10 +33,10 @@ export default class ImageManager {
         var lw = this.colorLayer[0].length
 
         // Initialize nodeLayer
-        for(let y = 0; y < lh; y++) {
+        for (let y = 0; y < lh; y++) {
             this.nodeLayer[y] = []
-            for(let x = 0; x < lw; x++) {
-                this.nodeLayer[y][x]=0
+            for (let x = 0; x < lw; x++) {
+                this.nodeLayer[y][x] = 0
             }
         }
     }
@@ -44,9 +44,9 @@ export default class ImageManager {
     initTracedMap() {
         if (this.source === 'undefined') helper.throw('Source imageData is required')
 
-        for(let y = 0; y < this.source.height+2; y++) {
-            this.tracedMap[y]=[]
-            for(let x = 0; x < this.source.width+2 ; x++) {
+        for (let y = 0; y < this.source.height + 2; y++) {
+            this.tracedMap[y] = []
+            for (let x = 0; x < this.source.width + 2; x++) {
                 this.tracedMap[y][x] = 0
             }
         }
@@ -62,11 +62,11 @@ export default class ImageManager {
         this.sourceImageData = sourceImage
     }
 
-    static  base64ToImageData(base64) {
-        return new Promise( async (resolve) => {
+    static base64ToImageData(base64) {
+        return new Promise(async (resolve) => {
             var image = new Image()
 
-            image.onload = function() {
+            image.onload = function () {
                 var canvas = document.createElement('canvas')
                 canvas.width = image.width
                 canvas.height = image.height

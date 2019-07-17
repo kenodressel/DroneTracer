@@ -1,9 +1,9 @@
 // read image file from File API
-export const readImage = function(imageFile) {
+export const readImage = function (imageFile) {
     var reader = new FileReader()
 
-    return new Promise( (resolve) => {
-        reader.onload = function(e) {
+    return new Promise((resolve) => {
+        reader.onload = function (e) {
             resolve(e.target.result)
         }
         // Read in the image file as a data URL.
@@ -11,7 +11,7 @@ export const readImage = function(imageFile) {
     })
 }
 
-export const isAnImageFile = function(file) {
-    if (!file.type.match('image.*')) return false
-    return true
+export const isAnImageFile = function (file) {
+    return file.type.match('image.*')
+
 }

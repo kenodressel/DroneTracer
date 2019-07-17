@@ -1,27 +1,27 @@
 import polyline2bezier from '../libs/polyline2bezier.js'
 
-export const traceToSVGPolyline = function(trace, scale = 1, origin = {x:0,y:0}) {
-    var ePolylineStr = ''
-		
+export const traceToSVGPolyline = function (trace, scale = 1, origin = {x: 0, y: 0}) {
+    var ePolylineStr
+
     var ePoly_start = '<polyline points="'
     var ePoly_end = '" />'
 
     var polyStr = ''
-    for(let i = 0; i < trace.length-1; i++) {
+    for (let i = 0; i < trace.length - 1; i++) {
         var point = trace[i]
         //var nextPoint = trace[1+1]
-        polyStr += `${(point.x-origin.x)*scale},${(point.y-origin.y)*scale} `
+        polyStr += `${(point.x - origin.x) * scale},${(point.y - origin.y) * scale} `
     }
-            
+
     ePolylineStr = `${ePoly_start}${polyStr}${ePoly_end}
 `
-        
+
     return ePolylineStr
 }
 
 // demove strokes smallers thatn the minimun drone resolution
-const optimizePath = function(trace, config) {
-    var minSize = config.droneResolution + config.dronePrecisionError/2
+const optimizePath = function (trace, config) {
+    var minSize = config.droneResolution + config.dronePrecisionError / 2
 
     var bX = trace[0][0], bY = trace[0][1]
     for (let i = 1; i < trace.length; i++) {
@@ -34,11 +34,11 @@ const optimizePath = function(trace, config) {
     return trace
 }
 
-const traceToBezier = function(trace, scale = 1, origin = {x:0,y:0}, config) {
+const traceToBezier = function (trace, scale = 1, origin = {x: 0, y: 0}, config) {
     var bezierCurves = false
 
     var arr = optimizePath(
-        trace.map(t=>[(t.x-origin.x)*scale,(t.y-origin.y)*scale]),
+        trace.map(t => [(t.x - origin.x) * scale, (t.y - origin.y) * scale]),
         config
     )
     if (arr) bezierCurves = polyline2bezier(arr)
@@ -46,7 +46,7 @@ const traceToBezier = function(trace, scale = 1, origin = {x:0,y:0}, config) {
     return bezierCurves
 }
 
-export const traceToSVGPath = function(trace, scale = 1, origin = {x:0,y:0}, config) {
+export const traceToSVGPath = function (trace, scale = 1, origin = {x: 0, y: 0}, config) {
     var ePathStr = ''
 
     var ePath_start = '<path d="'
@@ -70,7 +70,7 @@ export const traceToSVGPath = function(trace, scale = 1, origin = {x:0,y:0}, con
     return ePathStr
 }
 
-export const getBoundingBox = function(traces) {
+export const getBoundingBox = function (traces) {
     var maxX = 0, maxY = 0
     var minX = 9999, minY = 9999
     for (let trace of traces) {
@@ -85,7 +85,7 @@ export const getBoundingBox = function(traces) {
     return {maxX, maxY, minX, minY}
 }
 
-export const countTraces = function(traces) {
+export const countTraces = function (traces) {
     var result = {
         accumulated: 0,
         painting: 0,
@@ -95,25 +95,25 @@ export const countTraces = function(traces) {
 
     for (let trace = 0; trace < traces.length; trace++) {
         if (trace > 0 && trace < traces.length) {
-            p1 = traces[trace-1][traces[trace-1].length-1]
+            p1 = traces[trace - 1][traces[trace - 1].length - 1]
             p2 = traces[trace][0]
-            result.flying += Math.sqrt( Math.pow(p1.x-p2.x,2) + Math.pow(p1.y-p2.y,2) )
+            result.flying += Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
         }
         result.accumulated += traces[trace].length
         for (let point = 1; point < traces[trace].length; point++) {
-            p1 = traces[trace][point-1]
+            p1 = traces[trace][point - 1]
             p2 = traces[trace][point]
-            result.painting += Math.sqrt( Math.pow(p1.x-p2.x,2) + Math.pow(p1.y-p2.y,2) )
+            result.painting += Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
         }
     }
 
     return result
 }
 
-export const getSVGHeader = function(width, height, possition, config) {
+export const getSVGHeader = function (width, height, possition, config) {
     var stw = config.strokeWeight
-    var hstw = stw/2
-    var viewBox = `viewBox="-${hstw} -${hstw} ${width+stw} ${height+stw}"`
+    var hstw = stw / 2
+    var viewBox = `viewBox="-${hstw} -${hstw} ${width + stw} ${height + stw}"`
     var size = `width="${width}mm" height="${height}mm"`
 
     return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -130,6 +130,6 @@ export const getSVGHeader = function(width, height, possition, config) {
 `
 }
 
-export const getGlobal = function(color, strokeWeight) {
+export const getGlobal = function (color, strokeWeight) {
     return `<g fill="none" stroke="${color}" stroke-width="${strokeWeight}" stroke-linecap="round" stroke-linejoin="round">`
 }

@@ -15,7 +15,7 @@ class DronePaint {
         this.paintingColor = this.paintingConfig.colors[0]
         this.strokeWidth = 200
         this.paintingScale = 1
-        this.paintingPosition = [0,0]
+        this.paintingPosition = [0, 0]
 
         this.calculateSVG()
     }
@@ -37,8 +37,8 @@ class DronePaint {
 
     setPaintingPosition(x, y) {
         // check possitions relative in canvas
-        if (this.checkPaintingPosition([x,y])) {
-            this.paintingPosition = [x,y]
+        if (this.checkPaintingPosition([x, y])) {
+            this.paintingPosition = [x, y]
             this.setSVGHeader()
             return true
         }
@@ -74,24 +74,21 @@ class DronePaint {
     setSVGHeader() {
         this.SVGHeader = svgUtils.getSVGHeader(
             this.paintingWidth, this.paintingHeight,
-            [this.paintingPosition[0]+this.paintingConfig.canvasPosition[0],
-            this.paintingPosition[1]+this.paintingConfig.canvasPosition[1]], // painting origin (bottom-left of wall)
+            [this.paintingPosition[0] + this.paintingConfig.canvasPosition[0],
+                this.paintingPosition[1] + this.paintingConfig.canvasPosition[1]], // painting origin (bottom-left of wall)
             this.paintingConfig
         )
     }
 
     setSVGGlobal() {
-        this.SVGGlobalStyle = svgUtils.getGlobal(this.paintingColor,this.strokeWidth)
+        this.SVGGlobalStyle = svgUtils.getGlobal(this.paintingColor, this.strokeWidth)
     }
 
-    checkPaintingPosition(possition, scale=1) {
-        if ((possition[0] >=0 && possition[1]>=0) &&
-            (possition[0]+this.paintingWidth*scale<=this.paintingConfig.canvasSize[0]
-                && possition[1]+this.paintingHeight*scale<=this.paintingConfig.canvasSize[1])
-        ) {
-            return true
-        }
-        return false
+    checkPaintingPosition(possition, scale = 1) {
+        return (possition[0] >= 0 && possition[1] >= 0) &&
+            (possition[0] + this.paintingWidth * scale <= this.paintingConfig.canvasSize[0]
+                && possition[1] + this.paintingHeight * scale <= this.paintingConfig.canvasSize[1])
+
     }
 
     calculateSVG() {
@@ -108,24 +105,23 @@ class DronePaint {
             minX = boundingBox.minX, minY = boundingBox.minY
 
             // find scale factor
-            var density = counts.accumulated / ( (maxX-minX)*(maxY-minY) )
-            var map = helper.map(density, 0, 1, 0, this.paintingConfig.strokeWeight*3)
-            scale = (6+map) * this.paintingScale
+            var density = counts.accumulated / ((maxX - minX) * (maxY - minY))
+            var map = helper.map(density, 0, 1, 0, this.paintingConfig.strokeWeight * 3)
+            scale = (6 + map) * this.paintingScale
         }
 
         // calculate size in mm
-        var w = (maxX-minX)*scale, h = (maxY-minY)*scale
-        this.paintingWidth = w
-        this.paintingHeight = h
+        this.paintingWidth = (maxX - minX) * scale
+        this.paintingHeight = (maxY - minY) * scale
 
         // generate SVG strings
         this.setSVGHeader()
         this.setSVGGlobal()
 
-        this.SVGPaths= ''
+        this.SVGPaths = ''
         for (let trace of this.traces) {
             this.SVGPaths += svgUtils.traceToSVGPath(
-                trace, scale, {x:minX, y:minY}, this.paintingConfig
+                trace, scale, {x: minX, y: minY}, this.paintingConfig
             )
         }
 
@@ -150,14 +146,14 @@ class DronePaint {
             + counts.flying / this.paintingConfig.droneFlyingSpeed
 
         // number of times spray can should be changed
-        var canSwipes = Math.floor(this.estimations.paintingTime/this.paintingConfig.droneDrawingTime)
+        var canSwipes = Math.floor(this.estimations.paintingTime / this.paintingConfig.droneDrawingTime)
 
         // paintingTime + spray can swipe time
         this.estimations.fullPaintingTime = this.estimations.paintingTime
             + canSwipes * this.paintingConfig.droneSwapTime
 
         // number of times battery should be changed
-        var batterySwipes = Math.floor(this.estimations.flyingTime/this.paintingConfig.droneFlightTime)
+        var batterySwipes = Math.floor(this.estimations.flyingTime / this.paintingConfig.droneFlightTime)
 
         // flying time (fly and paint) + battery swipe time
         this.estimations.fullFlyingTime = this.estimations.fullPaintingTime

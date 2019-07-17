@@ -2,7 +2,7 @@
 export const defaultPaintingConfig = {
     wallSize: [33000, 50000],   // width [mm], height [mm]
     canvasSize: [33000, 10000], // canvas area size [mm]
-    canvasPosition: [0,10000],  // position of the canvas in the wall [mm]
+    canvasPosition: [0, 10000],  // position of the canvas in the wall [mm]
     colors: ['#000000'],    // single black color
     strokeWeight: 100,      // drone paint stroke thickness [mm]
     droneResolution: 200,   // drone resolution [mm]
@@ -13,7 +13,7 @@ export const defaultPaintingConfig = {
     droneSwapTime: 300000,    // land, swap battery and paint can, takeoff, and resume painting [ms]
     droneTakeoffTime: 140000, // Max duration from drone takeoff to actual painting [ms]
     droneLandingTime: 90000,  // Max time needed to stop painting and land [ms]
-    minimumImageSize: [350,350],    // Min image size to be accepted
+    minimumImageSize: [350, 350],    // Min image size to be accepted
 }
 
 export const requiredPaintingConfigParams = [

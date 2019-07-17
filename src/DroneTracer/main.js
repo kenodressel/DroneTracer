@@ -1,9 +1,9 @@
 import * as constants from './constants.js'
 import DronePaint from './dronepaint.js'
-import { readImage, isAnImageFile } from './filereader.js'
+import {readImage, isAnImageFile} from './filereader.js'
 import * as helper from './helper.js'
 import LineTracer from './tracer.js'
-import ImageManager  from './imagemanager.js'
+import ImageManager from './imagemanager.js'
 import * as ImageProcessing from './imageprocessing.js'
 
 
@@ -11,7 +11,7 @@ class DroneTracer {
     constructor(options = {}) {
         // check required data
         for (let key of constants.requiredPaintingConfigParams) {
-            if(options[key] === undefined) helper.throw(`parameter ${key} is required`)
+            if (options[key] === undefined) helper.throw(`parameter ${key} is required`)
         }
         // merge options with default configuration
         this.paintingConfig = Object.assign({}, constants.defaultPaintingConfig, options)
@@ -19,14 +19,16 @@ class DroneTracer {
 
     // Method
     // source could be an File API object or a base64 image (string)
-    transform(source, progress = ()=>{}, options = {}) {
+    transform(source, progress = () => {
+    }, options = {}) {
         // check parameters
         if (source === undefined) helper.throw('source image is required. |Image API|')
 
         var transformOptions = Object.assign({}, constants.defaultTransformOptions, options)
+
         // map default options
         if (options.lowThreshold === undefined)
-            options.lowThreshold == transformOptions.highThreshold * 0.10
+            options.lowThreshold = transformOptions.highThreshold * 0.10
 
         // create a ProgressReport instance
         var progressReport = new helper.ProgressReport(progress)
@@ -35,15 +37,15 @@ class DroneTracer {
         var progressSteps = transformOptions.centerline ? 14 : 13
         progressReport.setSteps(progressSteps)
 
-        return new Promise( async (resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             progressReport.reportIncreaseStep()
 
             var imageFile
 
-            if(typeof(source) === 'string') imageFile = source
+            if (typeof (source) === 'string') imageFile = source
 
             else {
-                if(!isAnImageFile(source)) {
+                if (!isAnImageFile(source)) {
                     helper.reject(reject, 'Not an image file')
                     return
                 }
@@ -51,13 +53,12 @@ class DroneTracer {
             }
 
 
-
             // Initialize ImageManager and source image file
             var imageManager = new ImageManager()
             imageManager.source = await ImageManager.base64ToImageData(imageFile)
 
             // minimun resolution (too small = no data)
-            if( imageManager.source.width < this.paintingConfig.minimumImageSize[0]
+            if (imageManager.source.width < this.paintingConfig.minimumImageSize[0]
                 || imageManager.source.height < this.paintingConfig.minimumImageSize[1]
             ) {
                 helper.reject(reject,
@@ -101,8 +102,7 @@ class DroneTracer {
                 // assign maps to ImageManager
                 imageManager.traceSource = thinningImg
                 imageManager.differenceSource = thinningImg
-            }
-            else {
+            } else {
                 // canny edge detection
                 var gaussianBlurImg = ImageProcessing.fastBlur(
                     imageManager.source, transformOptions.blurKernel)
@@ -128,7 +128,7 @@ class DroneTracer {
             }
 
             // Initialize LineTracer
-            var lineTracer =  new LineTracer(imageManager, transformOptions, progressReport)
+            var lineTracer = new LineTracer(imageManager, transformOptions, progressReport)
             var traces = lineTracer.traceImage()
 
 
@@ -144,13 +144,13 @@ class DroneTracer {
     }
 
     get uiParameters() {
-        var conf =  constants.defaultTransformOptions
+        var conf = constants.defaultTransformOptions
         var uiParams = []
         uiParams.push(
             helper.uiParamGenerator('Illustration', 'centerline', conf.centerline, 'checkbox')
         )
 
-        var paramsGroup = {label: 'Photo parameters', type: 'group', nested: [] }
+        var paramsGroup = {label: 'Photo parameters', type: 'group', nested: []}
         paramsGroup.condition = 'centerline === false'
 
         paramsGroup.nested.push(
@@ -164,7 +164,7 @@ class DroneTracer {
 
         uiParams.push(paramsGroup)
 
-        paramsGroup = {label: 'Illustration parameters', type: 'group', nested: [] }
+        paramsGroup = {label: 'Illustration parameters', type: 'group', nested: []}
         paramsGroup.condition = 'centerline === true'
 
         paramsGroup.nested.push(
@@ -181,11 +181,11 @@ class DroneTracer {
         uiParams.push(paramsGroup)
 
         uiParams.push(
-            helper.uiParamGenerator('Color', 'svgcolor',  this.paintingConfig.colors[0], 'color')
+            helper.uiParamGenerator('Color', 'svgcolor', this.paintingConfig.colors[0], 'color')
         )
 
         uiParams.push(
-            helper.uiParamGenerator('Actual Stroke Width', 'strokewidth',  100, 'range', 50, 1000)
+            helper.uiParamGenerator('Actual Stroke Width', 'strokewidth', 100, 'range', 50, 1000)
         )
 
         return uiParams
