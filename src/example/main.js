@@ -130,7 +130,7 @@ var renderUI = function(list) {
         else {
             var labelEl = createUiElement('label', el.label, 'center')
             var inputEl = createUiElement(el.type, el.name, 'center')
-        
+
             uiControlsEl.appendChild(labelEl)
             uiControlsEl.appendChild(inputEl)
         }
@@ -141,7 +141,7 @@ var renderUI = function(list) {
     document.querySelectorAll('input[type=range]').forEach((el)=>{
         el.setAttribute('value', el.value)
         el.oninput = function(e) {
-            e.srcElement.setAttribute('value', this.value)
+            e.target.setAttribute('value', this.value)
         }
     })
 
@@ -152,12 +152,10 @@ var renderUI = function(list) {
 
 
     // call color change
-    document.querySelectorAll('input[type=radio]').forEach((el)=>{
-        var value = el.value
-        el.onchange = function(e) {
-            changeColor(value)
-        }
-    })
+    document.querySelector('input[type=color]').onchange = function(e) {
+        changeColor(e.target.value)
+    }
+
 }
 
 function msToTime(duration) {
@@ -218,7 +216,7 @@ var paintingConfig = {
     wallSize: [30000, 20000],   // in mm
     canvasSize: [20000, 20000], // mm
     canvasPosition: [10000, 0], // mm (origin = [bottom left])
-    colors: ['#000000', '#eb340f', '#0f71eb'], // default [#000]
+    colors: ['#000000'], // default [#000]
     droneResolution: 200,       // min distance drone can move, in mm
     dronePrecisionError: 150,   // error margin, mm
     droneFlyingSpeed: 0.3,  // average drone flying speed [m/s]

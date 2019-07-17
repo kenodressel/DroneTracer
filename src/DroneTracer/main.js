@@ -40,7 +40,7 @@ class DroneTracer {
 
             var imageFile
 
-            if(typeof(source) === 'string') imageFile = source 
+            if(typeof(source) === 'string') imageFile = source
 
             else {
                 if(!isAnImageFile(source)) {
@@ -50,7 +50,7 @@ class DroneTracer {
                 imageFile = await readImage(source)
             }
 
-            
+
 
             // Initialize ImageManager and source image file
             var imageManager = new ImageManager()
@@ -124,7 +124,7 @@ class DroneTracer {
                 // assign maps to ImageManager
                 imageManager.cannyImageData = hysteresisImg
                 imageManager.traceSource = ImageProcessing.invert(imageManager.cannyImageData)
-                imageManager.differenceSource = nmsuImg 
+                imageManager.differenceSource = nmsuImg
             }
 
             // Initialize LineTracer
@@ -180,17 +180,16 @@ class DroneTracer {
 
         uiParams.push(paramsGroup)
 
-        var colorsGroup = {label: 'Colors', type: 'group', nested: [] }
-        this.paintingConfig.colors.forEach( color => {
-            colorsGroup.nested.push(
-                helper.uiParamGenerator(color, 'svgcolor', color, 'radio')
-            )
-        })
+        uiParams.push(
+            helper.uiParamGenerator('Color', 'svgcolor',  this.paintingConfig.colors[0], 'color')
+        )
 
-        uiParams.push(colorsGroup)
+        uiParams.push(
+            helper.uiParamGenerator('Actual Stroke Width', 'strokewidth',  100, 'range', 50, 1000)
+        )
 
         return uiParams
-    } 
+    }
 }
 
 export default DroneTracer
